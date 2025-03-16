@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="leafGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#48bb78"/>
+      <stop offset="100%" style="stop-color:#38a169"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Main Leaf Shape -->
+  <path d="M100,20 C140,20 180,60 180,100 C180,140 140,180 100,180 C60,180 20,140 20,100 C20,60 60,20 100,20 Z" fill="url(#leafGradient)" opacity="0.9"/>
+  
+  <!-- Circuit Pattern -->
+  <path d="M100,40 L100,160 M60,100 L140,100 M80,60 L120,140 M120,60 L80,140" stroke="white" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.7"/>
+  
+  <!-- Center Node -->
+  <circle cx="100" cy="100" r="15" fill="white" opacity="0.9"/>
+  
+  <!-- Connection Points -->
+  <circle cx="100" cy="40" r="5" fill="white" opacity="0.7"/>
+  <circle cx="100" cy="160" r="5" fill="white" opacity="0.7"/>
+  <circle cx="60" cy="100" r="5" fill="white" opacity="0.7"/>
+  <circle cx="140" cy="100" r="5" fill="white" opacity="0.7"/>
+</svg>

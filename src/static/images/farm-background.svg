@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#87CEEB"/>
+      <stop offset="100%" style="stop-color:#E0F4FF"/>
+    </linearGradient>
+    <linearGradient id="fieldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#90EE90"/>
+      <stop offset="100%" style="stop-color:#228B22"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Sky -->
+  <rect width="1920" height="600" fill="url(#skyGradient)"/>
+  
+  <!-- Sun -->
+  <circle cx="1600" cy="200" r="80" fill="#FFD700"/>
+  
+  <!-- Mountains -->
+  <path d="M0,400 L400,100 L800,450 L1200,150 L1600,400 L1920,200 L1920,600 L0,600 Z" fill="#4B6455" opacity="0.8"/>
+  
+  <!-- Fields -->
+  <path d="M0,400 C400,350 800,450 1200,400 C1600,350 1920,400 1920,400 L1920,1080 L0,1080 Z" fill="url(#fieldGradient)"/>
+  
+  <!-- Trees -->
+  <g transform="translate(200,350)">
+    <path d="M0,0 L30,-50 L60,0 Z" fill="#228B22"/>
+    <rect x="25" y="0" width="10" height="20" fill="#654321"/>
+  </g>
+  
+  <g transform="translate(1700,450)">
+    <path d="M0,0 L40,-70 L80,0 Z" fill="#228B22"/>
+    <rect x="35" y="0" width="10" height="25" fill="#654321"/>
+  </g>
+</svg>

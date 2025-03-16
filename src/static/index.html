@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NatureLink - AI-Powered Agricultural Solutions</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Navigation */
+        nav {
+            background: var(--white);
+            padding: 1.5rem 5%;
+            box-shadow: var(--shadow);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--secondary-green);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--secondary-green);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background-color: var(--text-dark);
+            margin: 5px 0;
+            transition: var(--transition);
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+                z-index: 1001;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                width: 100%;
+                background: var(--white);
+                flex-direction: column;
+                justify-content: center;
+                transition: var(--transition);
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        .hero p {
+            font-size: 1.1rem;
+            color: #6c757d;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Features */
+        .features {
+            padding: 4rem 2rem;
+            background: #ffffff;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .feature-card {
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+
+        /* Map Section */
+        .map-section {
+            display: flex;
+            height: 100vh;
+        }
+        #map { 
+            height: 100%;
+            width: 70%;
+            position: relative;
+        }
+        .leaflet-control-geocoder {
+            margin-top: 10px !important;
+        }
+        .leaflet-control-geocoder-form input {
+            width: 300px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .leaflet-control-geocoder-alternatives {
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .leaflet-control-geocoder-alternatives li {
+            padding: 8px;
+            cursor: pointer;
+        }
+        .leaflet-control-geocoder-alternatives li:hover {
+            background: #f5f5f5;
+        }
+        #sidebar {
+            width: 30%;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+        .data-panel {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .data-panel h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .coordinates {
+            font-family: monospace;
+            margin-bottom: 10px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 0;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="#" class="logo">Nature<span>Link</span></a>
+        <button class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#map-section">Map Analysis</a>
+            <a href="blog.html">Blog</a>
+            <a href="contact.html">Contact</a>
+            <a href="login.html">Login</a>
+        </div>
+    </nav>
+    <script src="js/nav.js"></script>
+
+    <section class="hero">
+        <h1>AI-Powered Agricultural Solutions</h1>
+        <p>Harness the power of artificial intelligence to optimize your farming decisions. Get real-time insights about soil conditions, crop health, and personalized recommendations.</p>
+    </section>
+
+    <section class="features" id="features">
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-leaf feature-icon"></i>
+                <h3>Vegetation Analysis</h3>
+                <p>Monitor crop health with advanced NDVI and EVI indices</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-tint feature-icon"></i>
+                <h3>Soil Analysis</h3>
+                <p>Get detailed insights about your soil composition and health</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-cloud-sun feature-icon"></i>
+                <h3>Weather Forecasting</h3>
+                <p>Access accurate weather predictions for better planning</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-chart-line feature-icon"></i>
+                <h3>Yield Prediction</h3>
+                <p>AI-powered crop yield forecasting for better planning</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="projects" id="projects">
+        <h2>Success Stories</h2>
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-image">
+                    <i class="fas fa-farm feature-icon"></i>
+                </div>
+                <div class="project-content">
+                    <h3>Maharashtra Farm Transformation</h3>
+                    <p>Helped increase crop yield by 40% through precision farming techniques</p>
+                    <a href="#" class="read-more">Read More</a>
+                </div>
+            </div>
+            <div class="project-card">
+                <div class="project-image">
+                    <i class="fas fa-seedling feature-icon"></i>
+                </div>
+                <div class="project-content">
+                    <h3>Karnataka Sustainable Farming</h3>
+                    <p>Implemented water-saving irrigation systems reducing water usage by 30%</p>
+                    <a href="#" class="read-more">Read More</a>
+                </div>
+            </div>
+            <div class="project-card">
+                <div class="project-image">
+                    <i class="fas fa-leaf feature-icon"></i>
+                </div>
+                <div class="project-content">
+                    <h3>Gujarat Organic Transition</h3>
+                    <p>Guided 100+ farmers in transitioning to organic farming practices</p>
+                    <a href="#" class="read-more">Read More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials" id="testimonials">
+        <h2>What Farmers Say</h2>
+        <div class="testimonials-slider">
+            <div class="testimonial-card">
+                <div class="testimonial-image">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="testimonial-content">
+                    <p>"NatureLink's AI predictions helped me optimize my crop rotation and increased my annual yield significantly."</p>
+                    <h4>Rajesh Patel</h4>
+                    <span>Gujarat Farmer</span>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-image">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="testimonial-content">
+                    <p>"The soil analysis feature has been a game-changer for my farm's productivity."</p>
+                    <h4>Anita Sharma</h4>
+                    <span>Maharashtra Farmer</span>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-image">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="testimonial-content">
+                    <p>"The weather predictions are incredibly accurate and help me plan my farming activities better."</p>
+                    <h4>Suresh Kumar</h4>
+                    <span>Karnataka Farmer</span>
+                </div>
+            </div>
+        </div>
+    </section>
+                <h3>Soil Moisture</h3>
+                <p>Track soil moisture levels for optimal irrigation</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-seedling feature-icon"></i>
+                <h3>Crop Recommendations</h3>
+                <p>Get AI-powered suggestions for crop selection</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="map-section" id="map-section">
+        <div id="map"></div>
+        <div id="sidebar">
+            <div class="data-panel">
+                <h3>Selected Location</h3>
+                <div class="coordinates" id="coordinates">Click on map to select location</div>
+                <button onclick="fetchData()">Fetch Agricultural Data</button>
+            </div>
+            <div class="data-panel">
+                <h3>Vegetation Indices</h3>
+                <div id="vegetation-data">No data available</div>
+            </div>
+            <div class="data-panel">
+                <h3>Soil Moisture</h3>
+                <div id="soil-data">No data available</div>
+            </div>
+            <div class="data-panel">
+                <h3>Crop Recommendations</h3>
+                <div id="crop-data">No data available</div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script>
+        let map = L.map('map').setView([20.5937, 78.9629], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Add the geocoder control
+        const geocoder = L.Control.geocoder({
+            defaultMarkGeocode: false,
+            placeholder: 'Search location...',
+            geocoder: L.Control.Geocoder.nominatim({
+                geocodingQueryParams: {
+                    countrycodes: 'in',
+                    limit: 5
+                }
+            })
+        }).addTo(map);
+
+        // Handle geocoding results
+        geocoder.on('markgeocode', function(e) {
+            if (selectedMarker) {
+                map.removeLayer(selectedMarker);
+            }
+            const bbox = e.geocode.bbox;
+            map.fitBounds([
+                [bbox.getSouth(), bbox.getWest()],
+                [bbox.getNorth(), bbox.getEast()]
+            ]);
+            selectedLat = e.geocode.center.lat;
+            selectedLon = e.geocode.center.lng;
+            selectedMarker = L.marker([selectedLat, selectedLon]).addTo(map);
+            document.getElementById('coordinates').innerHTML = 
+                `Latitude: ${selectedLat.toFixed(6)}<br>Longitude: ${selectedLon.toFixed(6)}`;
+        });
+
+
+        let selectedMarker = null;
+        let selectedLat = null;
+        let selectedLon = null;
+
+        map.on('click', function(e) {
+            if (selectedMarker) {
+                map.removeLayer(selectedMarker);
+            }
+            selectedLat = e.latlng.lat;
+            selectedLon = e.latlng.lng;
+            selectedMarker = L.marker([selectedLat, selectedLon]).addTo(map);
+            document.getElementById('coordinates').innerHTML = 
+                `Latitude: ${selectedLat.toFixed(6)}<br>Longitude: ${selectedLon.toFixed(6)}`;
+        });
+
+        async function fetchData() {
+            if (!selectedLat || !selectedLon) {
+                alert('Please select a location on the map first');
+                return;
+            }
+
+            const date = new Date().toISOString().split('T')[0];
+            const baseUrl = window.location.origin;
+
+            try {
+                // Fetch vegetation indices
+                const vegResponse = await fetch(`${baseUrl}/vegetation-indices`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        latitude: selectedLat,
+                        longitude: selectedLon,
+                        date: date
+                    })
+                });
+                const vegData = await vegResponse.json();
+                document.getElementById('vegetation-data').innerHTML = 
+                    `NDVI: ${vegData.ndvi.toFixed(3)}<br>EVI: ${vegData.evi.toFixed(3)}`;
+
+                // Fetch soil moisture
+                const soilResponse = await fetch(`${baseUrl}/soil-moisture`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        latitude: selectedLat,
+                        longitude: selectedLon,
+                        date: date
+                    })
+                });
+                const soilData = await soilResponse.json();
+                document.getElementById('soil-data').innerHTML = 
+                    `Soil Moisture: ${(soilData.moisture * 100).toFixed(1)}%`;
+
+                // Fetch crop recommendations
+                const cropResponse = await fetch(`${baseUrl}/crop-recommendations`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        latitude: selectedLat,
+                        longitude: selectedLon,
+                        date: date
+                    })
+                });
+                const cropData = await cropResponse.json();
+                document.getElementById('crop-data').innerHTML = 
+                    cropData.recommendations.map(rec => 
+                        `<div>${rec.crop}: ${rec.confidence}% confidence</div>`
+                    ).join('');
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                alert('Error fetching data. Please try again.');
+            }
+        }
+    </script>
+
+    <footer style="background: #2c3e50; color: #ffffff; padding: 2rem; text-align: center; margin-top: 2rem;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+                <a href="#" style="color: #ffffff; text-decoration: none;"><i class="fab fa-facebook"></i></a>
+                <a href="#" style="color: #ffffff; text-decoration: none;"><i class="fab fa-twitter"></i></a>
+                <a href="#" style="color: #ffffff; text-decoration: none;"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                <p>&copy; 2024 NatureLink. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
