@@ -9,13 +9,14 @@ from .bhuvan_api import BhuvanAPI
 from .bhuvan_services import BhuvanServices
 from .data_processor import DataProcessor
 from .model import CropYieldPredictor, ModelTrainer
+from .carbon_model import CarbonFootprintPredictor, CarbonModelTrainer
 import os
 from dotenv import load_dotenv
 
 app = FastAPI(title="NatureLink API", description="API for agricultural satellite data analysis")
 
 # Mount static files
-app.mount("/static", StaticFiles(directory="NatureLink/src/static"), name="static")
+app.mount("/static", StaticFiles(directory="src/static"), name="static")
 
 # Enable CORS
 app.add_middleware(
@@ -30,11 +31,14 @@ app.add_middleware(
 load_dotenv()
 
 # Initialize components
-bhuvan_api = BhuvanAPI()
+bhuvan_api = BhuvanAPI(os.getenv('BHUVAN_API_KEY'), os.getenv('BHUVAN_API_BASE_URL'))
 bhuvan_services = BhuvanServices(os.getenv('BHUVAN_API_KEY'), os.getenv('BHUVAN_API_BASE_URL'))
 data_processor = DataProcessor()
-model = CropYieldPredictor()
-trainer = ModelTrainer(model)
+crop_model = CropYieldPredictor()
+crop_trainer = ModelTrainer(crop_model)
+
+carbon_model = CarbonFootprintPredictor()
+carbon_trainer = CarbonModelTrainer(carbon_model)
 
 class LocationData(BaseModel):
     latitude: float
@@ -47,6 +51,44 @@ class TimeSeriesData(BaseModel):
     longitude: float
     start_date: str
     end_date: str
+
+class CarbonAnalysisRequest(BaseModel):
+    latitude: float
+    longitude: float
+    date: str
+
+@app.post("/analyze/carbon")
+async def analyze_carbon_footprint(data: CarbonAnalysisRequest):
+    try:
+        # Fetch satellite data
+        satellite_data = bhuvan_api.get_satellite_data(
+            data.latitude,
+            data.longitude,
+            data.date
+        )
+        
+        # Process data
+        processed_data = data_processor.process_satellite_data(satellite_data)
+        features = data_processor.extract_features(processed_data)
+        
+        # Make prediction
+        prediction = carbon_trainer.predict(features)
+        
+        return {
+            "timestamp": datetime.now().isoformat(),
+            "location": {
+                "latitude": data.latitude,
+                "longitude": data.longitude
+            },
+            "carbon_footprint": float(prediction[0]),
+            "contributing_factors": {
+                "vegetation_index": processed_data['processed_ndvi'],
+                "land_use_change": processed_data['land_use_change'],
+                "industrial_activity": processed_data['industrial_activity']
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/")
 async def root():

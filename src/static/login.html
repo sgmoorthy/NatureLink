@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NatureLink - Login</title>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-auth-compat.js"></script>
+    <script src="/static/js/firebase-config.js"></script>
     <style>
         * {
             margin: 0;
@@ -158,6 +161,10 @@
             </div>
             <button type="submit">Login</button>
         </form>
+        <button onclick="signInWithGmail()" class="gmail-btn" style="background: #DB4437; margin-top: 1rem;">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo" style="width: 18px; height: 18px; margin-right: 8px; vertical-align: middle;">
+            Sign in with Gmail
+        </button>
         <div class="links">
             <a href="#">Forgot Password?</a>
             <span class="divider">|</span>
@@ -174,30 +181,24 @@
         </div>
     </div>
     <script>
+        // Check if user is already signed in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                window.location.href = '/static/developer.html';
+            }
+        });
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
             try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email, password })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    localStorage.setItem('token', data.token);
-                    window.location.href = '/dashboard';
-                } else {
-                    alert('Invalid credentials');
-                }
+                await auth.signInWithEmailAndPassword(email, password);
+                window.location.href = '/static/developer.html';
             } catch (error) {
                 console.error('Login error:', error);
-                alert('An error occurred during login');
+                alert('Invalid credentials');
             }
         });
     </script>

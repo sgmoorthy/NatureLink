@@ -16,11 +16,11 @@ class DataProcessor:
         Returns:
             Dictionary containing processed features
         """
-        # TODO: Implement actual data processing
-        # This is a placeholder implementation
         processed_data = {
             'processed_ndvi': self._normalize_ndvi(raw_data.get('ndvi', 0)),
             'processed_moisture': self._normalize_moisture(raw_data.get('moisture', 0)),
+            'land_use_change': self._calculate_land_use_change(raw_data.get('land_use', {})),
+            'industrial_activity': self._estimate_industrial_activity(raw_data.get('thermal_data', {})),
             'timestamp': datetime.now().isoformat()
         }
         return processed_data
@@ -44,9 +44,27 @@ class DataProcessor:
         Returns:
             numpy array of features
         """
-        # TODO: Implement actual feature extraction
-        # This is a placeholder implementation
         features = np.array([
+            processed_data.get('processed_ndvi', 0),
+            processed_data.get('processed_moisture', 0),
+            processed_data.get('land_use_change', 0),
+            processed_data.get('industrial_activity', 0)
+        ])
+        return features
+        
+    def _calculate_land_use_change(self, land_use_data: Dict[str, Any]) -> float:
+        """Calculate land use change index from temporal land use data."""
+        # Placeholder implementation - would use actual land use classification
+        return float(land_use_data.get('change_index', 0))
+        
+    def _estimate_industrial_activity(self, thermal_data: Dict[str, Any]) -> float:
+        """Estimate industrial activity from thermal anomaly data."""
+        # Placeholder implementation - would use thermal signature analysis
+        return float(thermal_data.get('activity_index', 0))
+        
+    def get_features(self, processed_data: Dict[str, Any]) -> np.ndarray:
+        """Get feature vector for model input."""
+        return np.array([
             processed_data.get('processed_ndvi', 0),
             processed_data.get('processed_moisture', 0)
         ])

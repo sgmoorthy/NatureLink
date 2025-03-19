@@ -10,6 +10,24 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <link rel="stylesheet" href="styles.css">
     <style>
+        /* Loading and Error States */
+        .loading {
+            padding: 10px;
+            text-align: center;
+            color: #666;
+            background: #f5f5f5;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+        .error {
+            padding: 10px;
+            text-align: center;
+            color: #721c24;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
         /* Navigation */
         nav {
             background: var(--white);
@@ -160,6 +178,40 @@
             width: 70%;
             position: relative;
         }
+        #sidebar {
+            width: 30%;
+            height: 100%;
+            padding: 20px;
+            background: #fff;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+        .analysis-panel {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .analysis-panel h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .metric .label {
+            color: #666;
+        }
+        .metric .value {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        .high-risk { color: #d73027; }
+        .medium-risk { color: #fc8d59; }
+        .low-risk { color: #91cf60; }
         .leaflet-control-geocoder {
             margin-top: 10px !important;
         }
@@ -265,104 +317,33 @@
                 <h3>Yield Prediction</h3>
                 <p>AI-powered crop yield forecasting for better planning</p>
             </div>
-        </div>
-    </section>
-
-    <section class="projects" id="projects">
-        <h2>Success Stories</h2>
-        <div class="projects-grid">
-            <div class="project-card">
-                <div class="project-image">
-                    <i class="fas fa-farm feature-icon"></i>
-                </div>
-                <div class="project-content">
-                    <h3>Maharashtra Farm Transformation</h3>
-                    <p>Helped increase crop yield by 40% through precision farming techniques</p>
-                    <a href="#" class="read-more">Read More</a>
-                </div>
-            </div>
-            <div class="project-card">
-                <div class="project-image">
-                    <i class="fas fa-seedling feature-icon"></i>
-                </div>
-                <div class="project-content">
-                    <h3>Karnataka Sustainable Farming</h3>
-                    <p>Implemented water-saving irrigation systems reducing water usage by 30%</p>
-                    <a href="#" class="read-more">Read More</a>
-                </div>
-            </div>
-            <div class="project-card">
-                <div class="project-image">
-                    <i class="fas fa-leaf feature-icon"></i>
-                </div>
-                <div class="project-content">
-                    <h3>Gujarat Organic Transition</h3>
-                    <p>Guided 100+ farmers in transitioning to organic farming practices</p>
-                    <a href="#" class="read-more">Read More</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="testimonials" id="testimonials">
-        <h2>What Farmers Say</h2>
-        <div class="testimonials-slider">
-            <div class="testimonial-card">
-                <div class="testimonial-image">
-                    <i class="fas fa-user-circle"></i>
-                </div>
-                <div class="testimonial-content">
-                    <p>"NatureLink's AI predictions helped me optimize my crop rotation and increased my annual yield significantly."</p>
-                    <h4>Rajesh Patel</h4>
-                    <span>Gujarat Farmer</span>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <div class="testimonial-image">
-                    <i class="fas fa-user-circle"></i>
-                </div>
-                <div class="testimonial-content">
-                    <p>"The soil analysis feature has been a game-changer for my farm's productivity."</p>
-                    <h4>Anita Sharma</h4>
-                    <span>Maharashtra Farmer</span>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <div class="testimonial-image">
-                    <i class="fas fa-user-circle"></i>
-                </div>
-                <div class="testimonial-content">
-                    <p>"The weather predictions are incredibly accurate and help me plan my farming activities better."</p>
-                    <h4>Suresh Kumar</h4>
-                    <span>Karnataka Farmer</span>
-                </div>
-            </div>
-        </div>
-    </section>
-                <h3>Soil Moisture</h3>
-                <p>Track soil moisture levels for optimal irrigation</p>
-            </div>
             <div class="feature-card">
-                <i class="fas fa-seedling feature-icon"></i>
-                <h3>Crop Recommendations</h3>
-                <p>Get AI-powered suggestions for crop selection</p>
+                <i class="fas fa-chart-line feature-icon"></i>
+                <h3>Carbon footprint prediction</h3>
+                <p>AI-powered Carbon footprint prediction</p>
             </div>
+
+
+            
         </div>
     </section>
+
 
     <section class="map-section" id="map-section">
         <div id="map"></div>
         <div id="sidebar">
+            <div id="loading-indicator" style="display: none;">Loading data...</div>
             <div class="data-panel">
                 <h3>Selected Location</h3>
                 <div class="coordinates" id="coordinates">Click on map to select location</div>
                 <button onclick="fetchData()">Fetch Agricultural Data</button>
             </div>
-            <div class="data-panel">
+            <div id="carbon-panel" class="analysis-panel"></div>
+            <div id="vegetation-panel" class="analysis-panel">
                 <h3>Vegetation Indices</h3>
                 <div id="vegetation-data">No data available</div>
             </div>
-            <div class="data-panel">
+            <div id="soil-panel" class="analysis-panel">
                 <h3>Soil Moisture</h3>
                 <div id="soil-data">No data available</div>
             </div>
@@ -434,58 +415,158 @@
 
             const date = new Date().toISOString().split('T')[0];
             const baseUrl = window.location.origin;
+            const loadingHtml = '<div class="loading">Loading...</div>';
+
+            // Show loading state
+            document.getElementById('vegetation-data').innerHTML = loadingHtml;
+            document.getElementById('soil-data').innerHTML = loadingHtml;
+            document.getElementById('crop-data').innerHTML = loadingHtml;
 
             try {
-                // Fetch vegetation indices
-                const vegResponse = await fetch(`${baseUrl}/vegetation-indices`, {
+                const requestOptions = {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify({
                         latitude: selectedLat,
                         longitude: selectedLon,
                         date: date
                     })
-                });
-                const vegData = await vegResponse.json();
-                document.getElementById('vegetation-data').innerHTML = 
-                    `NDVI: ${vegData.ndvi.toFixed(3)}<br>EVI: ${vegData.evi.toFixed(3)}`;
+                };
 
-                // Fetch soil moisture
-                const soilResponse = await fetch(`${baseUrl}/soil-moisture`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        latitude: selectedLat,
-                        longitude: selectedLon,
-                        date: date
-                    })
-                });
-                const soilData = await soilResponse.json();
-                document.getElementById('soil-data').innerHTML = 
-                    `Soil Moisture: ${(soilData.moisture * 100).toFixed(1)}%`;
+                // Fetch all data in parallel
+                const [vegResponse, soilResponse, cropResponse] = await Promise.all([
+                    fetch(`${baseUrl}/vegetation-indices`, requestOptions),
+                    fetch(`${baseUrl}/soil-moisture`, requestOptions),
+                    fetch(`${baseUrl}/crop-recommendations`, requestOptions)
+                ]);
 
-                // Fetch crop recommendations
-                const cropResponse = await fetch(`${baseUrl}/crop-recommendations`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        latitude: selectedLat,
-                        longitude: selectedLon,
-                        date: date
-                    })
-                });
-                const cropData = await cropResponse.json();
-                document.getElementById('crop-data').innerHTML = 
-                    cropData.recommendations.map(rec => 
-                        `<div>${rec.crop}: ${rec.confidence}% confidence</div>`
-                    ).join('');
+                // Check response status
+                if (!vegResponse.ok) throw new Error(`Vegetation API error: ${vegResponse.status}`);
+                if (!soilResponse.ok) throw new Error(`Soil API error: ${soilResponse.status}`);
+                if (!cropResponse.ok) throw new Error(`Crop API error: ${cropResponse.status}`);
+
+                // Parse response data
+                const [vegData, soilData, cropData] = await Promise.all([
+                    vegResponse.json(),
+                    soilResponse.json(),
+                    cropResponse.json()
+                ]);
+
+                // Update UI with data
+                if (vegData && typeof vegData.ndvi === 'number' && typeof vegData.evi === 'number') {
+                    document.getElementById('vegetation-data').innerHTML = 
+                        `NDVI: ${vegData.ndvi.toFixed(3)}<br>EVI: ${vegData.evi.toFixed(3)}`;
+                } else {
+                    throw new Error('Invalid vegetation data format');
+                }
+
+                if (soilData && typeof soilData.moisture === 'number') {
+                    document.getElementById('soil-data').innerHTML = 
+                        `Soil Moisture: ${(soilData.moisture * 100).toFixed(1)}%`;
+                } else {
+                    throw new Error('Invalid soil moisture data format');
+                }
+
+                if (cropData && Array.isArray(cropData.recommendations)) {
+                    document.getElementById('crop-data').innerHTML = 
+                        cropData.recommendations.map(rec => 
+                            `<div>${rec.crop}: ${rec.confidence}% confidence</div>`
+                        ).join('') || 'No recommendations available';
+                } else {
+                    throw new Error('Invalid crop recommendations format');
+                }
 
             } catch (error) {
                 console.error('Error fetching data:', error);
-                alert('Error fetching data. Please try again.');
+                const errorMessage = error.message || 'Failed to fetch data. Please try again.';
+                document.getElementById('vegetation-data').innerHTML = `<div class="error">${errorMessage}</div>`;
+                document.getElementById('soil-data').innerHTML = `<div class="error">${errorMessage}</div>`;
+                document.getElementById('crop-data').innerHTML = `<div class="error">${errorMessage}</div>`;
             }
         }
     </script>
+
+
+
+ 
+
+
+    <section class="projects" id="projects">
+        <h2>Success Stories</h2>
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-image">
+                    <i class="fas fa-farm feature-icon"></i>
+                </div>
+                <div class="project-content">
+                    <h3>Bodi Farm Transformation</h3>
+                    <p>Helped increase crop yield by 40% through precision farming techniques</p>
+                    <a href="#" class="read-more">Read More</a>
+                </div>
+            </div>
+            <div class="project-card">
+                <div class="project-image">
+                    <i class="fas fa-seedling feature-icon"></i>
+                </div>
+                <div class="project-content">
+                    <h3>Chidambaram Sustainable Farming</h3>
+                    <p>Implemented water-saving irrigation systems reducing water usage by 30%</p>
+                    <a href="#" class="read-more">Read More</a>
+                </div>
+            </div>
+            <div class="project-card">
+                <div class="project-image">
+                    <i class="fas fa-leaf feature-icon"></i>
+                </div>
+                <div class="project-content">
+                    <h3>Karaikkal Organic Transition</h3>
+                    <p>Guided 100+ farmers in transitioning to organic farming practices</p>
+                    <a href="#" class="read-more">Read More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials" id="testimonials">
+        <h2>What Farmers Say</h2>
+        <div class="testimonials-slider">
+            <div class="testimonial-card">
+                <div class="testimonial-image">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="testimonial-content">
+                    <p>"NatureLink's AI predictions helped me optimize my crop rotation and increased my annual yield significantly."</p>
+                    <h4>Rajesh Patel</h4>
+                    <span>Gujarat Farmer</span>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-image">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="testimonial-content">
+                    <p>"The soil analysis feature has been a game-changer for my farm's productivity."</p>
+                    <h4>Anita Sharma</h4>
+                    <span>Maharashtra Farmer</span>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-image">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="testimonial-content">
+                    <p>"The weather predictions are incredibly accurate and help me plan my farming activities better."</p>
+                    <h4>Suresh Kumar</h4>
+                    <span>Karnataka Farmer</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    </section>
 
     <footer style="background: #2c3e50; color: #ffffff; padding: 2rem; text-align: center; margin-top: 2rem;">
         <div style="max-width: 1200px; margin: 0 auto;">

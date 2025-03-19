@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Documentation - NatureLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css" />
+    <style>
+        :root {
+            --primary-green: #2c5e1e;
+            --secondary-green: #4CAF50;
+            --text-dark: #2c3e50;
+            --text-light: #6c757d;
+            --white: #ffffff;
+            --shadow: 0 2px 5px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+            color: var(--text-dark);
+            padding-top: 70px;
+        }
+
+        nav {
+            background: var(--white);
+            padding: 1rem 5%;
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--secondary-green);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary-green);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .documentation-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .documentation-header h1 {
+            color: var(--primary-green);
+            margin-bottom: 1rem;
+        }
+
+        .documentation-header p {
+            color: var(--text-light);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .documentation-nav {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .documentation-nav button {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .documentation-nav button:hover,
+        .documentation-nav button.active {
+            color: var(--secondary-green);
+        }
+
+        .documentation-section {
+            margin-bottom: 3rem;
+        }
+
+        .swagger-ui .topbar {
+            display: none;
+        }
+
+        #getting-started,
+        #authentication {
+            display: none;
+        }
+
+        .documentation-section h2 {
+            color: var(--primary-green);
+            margin-bottom: 1.5rem;
+        }
+
+        .documentation-section p,
+        .documentation-section ul {
+            margin-bottom: 1rem;
+        }
+
+        .documentation-section code {
+            background: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">Nature<span>Link</span></a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="#">Documentation</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="documentation-header">
+            <h1>Developer Documentation</h1>
+            <p>Welcome to NatureLink's API documentation. Here you'll find comprehensive information about our APIs, authentication methods, and example implementations.</p>
+        </div>
+
+        <div class="documentation-nav">
+            <button onclick="showSection('api-reference')" class="active">API Reference</button>
+            <button onclick="showSection('getting-started')">Getting Started</button>
+            <button onclick="showSection('authentication')">Authentication</button>
+        </div>
+
+        <div id="api-reference" class="documentation-section">
+            <div id="swagger-ui"></div>
+        </div>
+
+        <div id="getting-started" class="documentation-section">
+            <h2>Getting Started</h2>
+            <p>To begin using the NatureLink API, follow these steps:</p>
+            <ul>
+                <li>Sign up for a NatureLink account</li>
+                <li>Generate your API key from the dashboard</li>
+                <li>Include your API key in the request headers</li>
+                <li>Start making API requests</li>
+            </ul>
+            <p>Base URL for all API requests:</p>
+            <code>https://api.naturelink.com/v1</code>
+        </div>
+
+        <div id="authentication" class="documentation-section">
+            <h2>Authentication</h2>
+            <p>NatureLink uses API keys for authentication. Include your API key in the request headers:</p>
+            <code>Authorization: Bearer YOUR_API_KEY</code>
+            <p>Keep your API key secure and never share it publicly.</p>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js"></script>
+    <script>
+        // Check authentication state
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = '/static/login.html';
+            }
+        });
+
+        window.onload = function() {
+            const ui = SwaggerUI({
+                url: "/api/swagger.json",  // Path to your OpenAPI/Swagger specification
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIBundle.SwaggerUIStandalonePreset
+                ],
+                layout: "BaseLayout",
+                docExpansion: "list",
+                defaultModelsExpandDepth: -1
+            });
+        };
+
+        // Section navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.documentation-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.querySelectorAll('.documentation-nav button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.getElementById(sectionId).style.display = 'block';
+            document.querySelector(`button[onclick="showSection('${sectionId}')"]`).classList.add('active');
+        }
+    </script>
+</body>
+</html>

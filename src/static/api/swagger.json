@@ -1,0 +1,206 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "NatureLink API",
+    "description": "API documentation for NatureLink's agricultural data services",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.naturelink.com/v1",
+      "description": "Production server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/vegetation-indices": {
+      "post": {
+        "summary": "Get vegetation indices for a location",
+        "description": "Returns NDVI and EVI indices for the specified coordinates and date",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "latitude": {
+                    "type": "number",
+                    "format": "float",
+                    "example": 20.5937
+                  },
+                  "longitude": {
+                    "type": "number",
+                    "format": "float",
+                    "example": 78.9629
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2024-01-15"
+                  }
+                },
+                "required": ["latitude", "longitude", "date"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ndvi": {
+                      "type": "number",
+                      "format": "float",
+                      "example": 0.65
+                    },
+                    "evi": {
+                      "type": "number",
+                      "format": "float",
+                      "example": 0.48
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/soil-moisture": {
+      "post": {
+        "summary": "Get soil moisture data",
+        "description": "Returns soil moisture percentage for the specified location",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "latitude": {
+                    "type": "number",
+                    "format": "float",
+                    "example": 20.5937
+                  },
+                  "longitude": {
+                    "type": "number",
+                    "format": "float",
+                    "example": 78.9629
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2024-01-15"
+                  }
+                },
+                "required": ["latitude", "longitude", "date"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "moisture": {
+                      "type": "number",
+                      "format": "float",
+                      "example": 0.35
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/crop-recommendations": {
+      "post": {
+        "summary": "Get crop recommendations",
+        "description": "Returns AI-powered crop recommendations based on location data",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "latitude": {
+                    "type": "number",
+                    "format": "float",
+                    "example": 20.5937
+                  },
+                  "longitude": {
+                    "type": "number",
+                    "format": "float",
+                    "example": 78.9629
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2024-01-15"
+                  }
+                },
+                "required": ["latitude", "longitude", "date"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "recommendations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "crop": {
+                            "type": "string",
+                            "example": "wheat"
+                          },
+                          "confidence": {
+                            "type": "number",
+                            "format": "float",
+                            "example": 85
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

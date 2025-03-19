@@ -14,6 +14,19 @@ NatureLink is an innovative agricultural technology platform that leverages sate
 - Crop classification and health assessment
 - Vegetation indices tracking (NDVI, EVI)
 
+### Bhuvan API Attribution and Usage Terms
+- Data Source: National Remote Sensing Centre, ISRO, Government of India, Hyderabad, India
+- Copyright: © NRSC, ISRO
+- License: Limited, non-exclusive, non-transferable
+
+#### Usage Restrictions
+- Visualization size limited to 1K x 1K
+- For internal use and applications only
+- No downloading of original products
+
+#### Disclaimer
+Users are solely responsible for interpretations made from these products. NRSC/ISRO/DOS does not warrant results obtained by using this data. While sufficient care was taken to provide reliable information, NRSC/ISRO/DOS does not take responsibility for any errors.
+
 ### AI-Powered Predictions
 - Crop yield forecasting
 - Soil health analysis
